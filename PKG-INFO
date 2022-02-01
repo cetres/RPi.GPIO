@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: RPi.GPIO
-Version: 0.7.0
+Version: 0.7.1
 Summary: A module to control Raspberry Pi GPIO channels
 Home-page: http://sourceforge.net/projects/raspberry-gpio-python/
 Author: Ben Croston
@@ -24,6 +24,10 @@ Description: This package provides a class to control the GPIO on a Raspberry Pi
         Change Log
         ==========
         
+        0.7.1
+        -------
+        - Added Python 3.10 support (cetres@gmail.com)
+
         0.7.0
         -------
         - Updated RPI_INFO to include RPi 4B

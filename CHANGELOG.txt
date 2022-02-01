@@ -1,6 +1,10 @@
 Change Log
 ==========
 
+0.7.1
+-------
+- Added Python 3.10 support (cetres@gmail.com)
+
 0.7.0
 -------
 - Updated RPI_INFO to include RPi 4B
