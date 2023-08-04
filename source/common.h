@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013-2015 Ben Croston
+Copyright (c) 2013-2021 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -20,9 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef COMMON_H
-#define COMMON_H
-
 #include "cpuinfo.h"
 
 #define MODE_UNKNOWN -1
@@ -42,7 +39,6 @@ extern int gpio_direction[54];
 extern rpi_info rpiinfo;
 extern int setup_error;
 extern int module_setup;
+
 int check_gpio_priv(void);
 int get_gpio_number(int channel, unsigned int *gpio);
-
-#endif

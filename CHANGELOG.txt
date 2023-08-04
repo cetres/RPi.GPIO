@@ -3,10 +3,17 @@ Change Log
 
 0.7.1
 -------
-- Added Python 3.10 support (cetres@gmail.com)
+- Better RPi board + peri_addr detection (issue 190 / 191)
+- Fix PyEval_InitThreads deprecation warning for Python 3.9 (issue 188)
+- Fix build using GCC 10 (issue 187)
+- Fix docstrings to not include licence
+- Remove Debian/Raspbian stretch packaging support
+- Use setuptools instead of distutils
+- Added detection of Zero 2 W
+- Tested and working with Python 2.7, 3.7, 3.8, 3.9, 3.10
 
 0.7.0
--------
+-----
 - Updated RPI_INFO to include RPi 4B
 - Fixed pull up/down for Pi4 (issue 168)
 - Fix spelling mistake in docstrings

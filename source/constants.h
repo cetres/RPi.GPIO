@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013 Ben Croston
+Copyright (c) 2013-2021 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -22,5 +22,23 @@ SOFTWARE.
 
 #define PY_PUD_CONST_OFFSET 20
 #define PY_EVENT_CONST_OFFSET 30
+
+extern PyObject *high;
+extern PyObject *low;
+extern PyObject *input;
+extern PyObject *output;
+extern PyObject *pwm;
+extern PyObject *serial;
+extern PyObject *i2c;
+extern PyObject *spi;
+extern PyObject *unknown;
+extern PyObject *board;
+extern PyObject *bcm;
+extern PyObject *pud_off;
+extern PyObject *pud_up;
+extern PyObject *pud_down;
+extern PyObject *rising_edge;
+extern PyObject *falling_edge;
+extern PyObject *both_edge;
 
 void define_constants(PyObject *module);

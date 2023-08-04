@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013-2016 Ben Croston
+Copyright (c) 2013-2021 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -26,56 +26,74 @@ SOFTWARE.
 #include "c_gpio.h"
 #include "event_gpio.h"
 
+PyObject *high;
+PyObject *low;
+PyObject *input;
+PyObject *output;
+PyObject *pwm;
+PyObject *serial;
+PyObject *i2c;
+PyObject *spi;
+PyObject *unknown;
+PyObject *board;
+PyObject *bcm;
+PyObject *pud_off;
+PyObject *pud_up;
+PyObject *pud_down;
+PyObject *rising_edge;
+PyObject *falling_edge;
+PyObject *both_edge;
+
 void define_constants(PyObject *module)
 {
-   PyObject *high = Py_BuildValue("i", HIGH);
+   high = Py_BuildValue("i", HIGH);
    PyModule_AddObject(module, "HIGH", high);
 
-   PyObject *low = Py_BuildValue("i", LOW);
+   low = Py_BuildValue("i", LOW);
    PyModule_AddObject(module, "LOW", low);
 
-   PyObject *output = Py_BuildValue("i", OUTPUT);
+   output = Py_BuildValue("i", OUTPUT);
    PyModule_AddObject(module, "OUT", output);
 
-   PyObject *input = Py_BuildValue("i", INPUT);
+   input = Py_BuildValue("i", INPUT);
    PyModule_AddObject(module, "IN", input);
 
-   PyObject *pwm = Py_BuildValue("i", PWM);
+   pwm = Py_BuildValue("i", PWM);
    PyModule_AddObject(module, "HARD_PWM", pwm);
 
-   PyObject *serial = Py_BuildValue("i", SERIAL);
+   serial = Py_BuildValue("i", SERIAL);
    PyModule_AddObject(module, "SERIAL", serial);
 
-   PyObject *i2c = Py_BuildValue("i", I2C);
+   i2c = Py_BuildValue("i", I2C);
    PyModule_AddObject(module, "I2C", i2c);
 
-   PyObject *spi = Py_BuildValue("i", SPI);
+   spi = Py_BuildValue("i", SPI);
    PyModule_AddObject(module, "SPI", spi);
 
-   PyObject *unknown = Py_BuildValue("i", MODE_UNKNOWN);
+   unknown = Py_BuildValue("i", MODE_UNKNOWN);
    PyModule_AddObject(module, "UNKNOWN", unknown);
 
-   PyObject *board = Py_BuildValue("i", BOARD);
+   board = Py_BuildValue("i", BOARD);
    PyModule_AddObject(module, "BOARD", board);
 
-   PyObject *bcm = Py_BuildValue("i", BCM);
+   bcm = Py_BuildValue("i", BCM);
    PyModule_AddObject(module, "BCM", bcm);
 
-   PyObject *pud_off = Py_BuildValue("i", PUD_OFF + PY_PUD_CONST_OFFSET);
+   pud_off = Py_BuildValue("i", PUD_OFF + PY_PUD_CONST_OFFSET);
    PyModule_AddObject(module, "PUD_OFF", pud_off);
 
-   PyObject *pud_up = Py_BuildValue("i", PUD_UP + PY_PUD_CONST_OFFSET);
+   pud_up = Py_BuildValue("i", PUD_UP + PY_PUD_CONST_OFFSET);
    PyModule_AddObject(module, "PUD_UP", pud_up);
 
-   PyObject *pud_down = Py_BuildValue("i", PUD_DOWN + PY_PUD_CONST_OFFSET);
+   pud_down = Py_BuildValue("i", PUD_DOWN + PY_PUD_CONST_OFFSET);
    PyModule_AddObject(module, "PUD_DOWN", pud_down);
 
-   PyObject *rising_edge = Py_BuildValue("i", RISING_EDGE + PY_EVENT_CONST_OFFSET);
+   rising_edge = Py_BuildValue("i", RISING_EDGE + PY_EVENT_CONST_OFFSET);
    PyModule_AddObject(module, "RISING", rising_edge);
 
-   PyObject *falling_edge = Py_BuildValue("i", FALLING_EDGE + PY_EVENT_CONST_OFFSET);
+   falling_edge = Py_BuildValue("i", FALLING_EDGE + PY_EVENT_CONST_OFFSET);
    PyModule_AddObject(module, "FALLING", falling_edge);
 
-   PyObject *both_edge = Py_BuildValue("i", BOTH_EDGE + PY_EVENT_CONST_OFFSET);
+   both_edge = Py_BuildValue("i", BOTH_EDGE + PY_EVENT_CONST_OFFSET);
    PyModule_AddObject(module, "BOTH", both_edge);
 }

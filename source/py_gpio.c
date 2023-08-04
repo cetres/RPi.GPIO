@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012-2016 Ben Croston
+Copyright (c) 2012-2021 Ben Croston
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -61,8 +61,8 @@ static int mmap_gpio_mem(void)
    } else if (result == SETUP_CPUINFO_FAIL) {
       PyErr_SetString(PyExc_RuntimeError, "Unable to open /proc/cpuinfo");
       return 4;
-   } else if (result == SETUP_NOT_RPI_FAIL) {
-      PyErr_SetString(PyExc_RuntimeError, "Not running on a RPi!");
+   } else if (result == SETUP_NO_PERI_ADDR) {
+      PyErr_SetString(PyExc_RuntimeError, "Cannot determine SOC peripheral base address");
       return 5;
    } else { // result == SETUP_OK
       module_setup = 1;
@@ -1043,8 +1043,10 @@ PyMODINIT_FUNC init_GPIO(void)
    Py_INCREF(&PWMType);
    PyModule_AddObject(module, "PWM", (PyObject*)&PWMType);
 
+#if PY_MAJOR_VERSION < 3 || PY_MINOR_VERSION < 7
    if (!PyEval_ThreadsInitialized())
       PyEval_InitThreads();
+#endif
 
    // register exit functions - last declared is called first
    if (Py_AtExit(cleanup) != 0)
