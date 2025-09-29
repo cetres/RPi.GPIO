@@ -167,7 +167,7 @@ class TestAAASetup(unittest.TestCase):
         # test warning when using pull up/down on i2c channels
         GPIO.setmode(GPIO.BOARD)
         if GPIO.RPI_INFO['P1_REVISION'] == 0: # compute module
-            pass    # test not vailid
+            pass    # test not valid
         else:  # revision 1, 2 or A+/B+
             with warnings.catch_warnings(record=True) as w:
                 GPIO.setup(3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -177,7 +177,7 @@ class TestAAASetup(unittest.TestCase):
                 self.assertEqual(w[0].category, RuntimeWarning)
             GPIO.cleanup()
 
-        # test non integer channel
+        # test non-integer channel
         GPIO.setmode(GPIO.BOARD)
         with self.assertRaises(ValueError):
             GPIO.setup('d', GPIO.OUT)
@@ -389,7 +389,7 @@ class TestSwitchBounce(unittest.TestCase):
 
     def cb(self,chan):
         self.switchcount += 1
-        print('Button press',self.switchcount)
+        print('Button press', self.switchcount)
 
     def setUp(self):
         GPIO.setmode(GPIO.BOARD)
@@ -412,7 +412,7 @@ class TestSwitchBounce(unittest.TestCase):
         while self.switchcount < 10:
             if GPIO.event_detected(SWITCH_PIN):
                 self.switchcount += 1
-                print('Button press',self.switchcount)
+                print('Button press', self.switchcount)
         GPIO.remove_event_detect(SWITCH_PIN)
 
     def tearDown(self):
@@ -424,7 +424,7 @@ class TestEdgeDetection(unittest.TestCase):
         GPIO.setup(LOOP_IN, GPIO.IN)
         GPIO.setup(LOOP_OUT, GPIO.OUT)
 
-    #  Running a shell command with os.sytem has caused problems
+    #  Running a shell command with os.system has caused problems
     #  with sending SIGCHLD to the polling thread, causing it
     #  to exit.  Test for that.
     def testShellCmdWithWaitForEdge(self):

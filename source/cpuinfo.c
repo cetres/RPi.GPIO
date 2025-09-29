@@ -142,7 +142,7 @@ int get_rpi_info(rpi_info *info)
 
       uint64_t rev;
       sscanf(revision, "%llx", &rev);
-      rev = rev & 0xefffffff;       // ignore preceeding 1000 for overvolt
+      rev = rev & 0xefffffff;       // ignore preceding 1000 for overvolt
 
       if (rev == 0x0002 || rev == 0x0003) {
          info->type = "Model B";

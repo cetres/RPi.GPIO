@@ -1,0 +1,19 @@
+name: ci
+
+on:
+  push:
+    # branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  codespell_and_ruff:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - uses: codespell-project/actions-codespell@v2
+    - uses: astral-sh/ruff-action@v3
+      with:
+        args: check --exit-zero  # TODO: Remove `--exit-zero` and `|| true`
+    - run: ruff format --check --diff --config='format.quote-style="preserve"' || true
