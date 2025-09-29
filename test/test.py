@@ -19,6 +19,7 @@
 # SOFTWARE.
 
 from __future__ import print_function
+
 if hasattr(__builtins__, 'raw_input'):
     input = raw_input
 
@@ -40,6 +41,7 @@ import warnings
 import time
 from threading import Timer
 import RPi.GPIO as GPIO
+
 if sys.version[:3] == '2.6':
     import unittest2 as unittest
 else:
@@ -56,10 +58,11 @@ LOOP_OUT = 22
 NC_PIN = 24
 
 non_interactive = False
-for i,val in enumerate(sys.argv):
+for i, val in enumerate(sys.argv):
     if val == '--non_interactive':
         non_interactive = True
         sys.argv.pop(i)
+
 
 # Test starts with 'AAA' so that it is run first
 class TestAAASetup(unittest.TestCase):
@@ -67,7 +70,10 @@ class TestAAASetup(unittest.TestCase):
         # Test mode not set (BOARD or BCM) exception
         with self.assertRaises(RuntimeError) as e:
             GPIO.setup(LED_PIN, GPIO.OUT)
-        self.assertEqual(str(e.exception), 'Please set pin numbering mode using GPIO.setmode(GPIO.BOARD) or GPIO.setmode(GPIO.BCM)')
+        self.assertEqual(
+            str(e.exception),
+            'Please set pin numbering mode using GPIO.setmode(GPIO.BOARD) or GPIO.setmode(GPIO.BCM)',
+        )
 
         # Test trying to change mode after it has been set
         GPIO.setmode(GPIO.BCM)
@@ -93,7 +99,9 @@ class TestAAASetup(unittest.TestCase):
         GPIO.setmode(GPIO.BOARD)
         with self.assertRaises(RuntimeError) as e:
             GPIO.output(LED_PIN, GPIO.HIGH)
-        self.assertEqual(str(e.exception), 'The GPIO channel has not been set up as an OUTPUT')
+        self.assertEqual(
+            str(e.exception), 'The GPIO channel has not been set up as an OUTPUT'
+        )
 
         # Test setup(..., pull_up_down=GPIO.HIGH) raises exception
         GPIO.setmode(GPIO.BOARD)
@@ -104,20 +112,22 @@ class TestAAASetup(unittest.TestCase):
         GPIO.setmode(GPIO.BOARD)
         with self.assertRaises(ValueError) as e:
             GPIO.setup(GND_PIN, GPIO.OUT)
-        self.assertEqual(str(e.exception), 'The channel sent is invalid on a Raspberry Pi')
+        self.assertEqual(
+            str(e.exception), 'The channel sent is invalid on a Raspberry Pi'
+        )
 
         # Test 'already in use' warning
         GPIO.setmode(GPIO.BOARD)
-        with open('/sys/class/gpio/export','wb') as f:
+        with open('/sys/class/gpio/export', 'wb') as f:
             f.write(str(LED_PIN_BCM).encode())
         time.sleep(0.2)  # wait for udev to set permissions
-        with open('/sys/class/gpio/gpio%s/direction'%LED_PIN_BCM,'wb') as f:
+        with open('/sys/class/gpio/gpio%s/direction' % LED_PIN_BCM, 'wb') as f:
             f.write(b'out')
         time.sleep(0.2)
         with warnings.catch_warnings(record=True) as w:
-            GPIO.setup(LED_PIN, GPIO.OUT)    # generate 'already in use' warning
+            GPIO.setup(LED_PIN, GPIO.OUT)  # generate 'already in use' warning
             self.assertEqual(w[0].category, RuntimeWarning)
-        with open('/sys/class/gpio/unexport','wb') as f:
+        with open('/sys/class/gpio/unexport', 'wb') as f:
             f.write(str(LED_PIN_BCM).encode())
         GPIO.cleanup()
 
@@ -146,28 +156,30 @@ class TestAAASetup(unittest.TestCase):
 
         # test setup of a list of channels
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup( [LED_PIN, LOOP_OUT], GPIO.OUT)
+        GPIO.setup([LED_PIN, LOOP_OUT], GPIO.OUT)
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.OUT)
         self.assertEqual(GPIO.gpio_function(LOOP_OUT), GPIO.OUT)
         GPIO.cleanup()
         GPIO.setmode(GPIO.BOARD)
         with self.assertRaises(ValueError) as e:
-            GPIO.setup( [LED_PIN, GND_PIN], GPIO.OUT)
+            GPIO.setup([LED_PIN, GND_PIN], GPIO.OUT)
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.OUT)
-        self.assertEqual(str(e.exception), 'The channel sent is invalid on a Raspberry Pi')
+        self.assertEqual(
+            str(e.exception), 'The channel sent is invalid on a Raspberry Pi'
+        )
         GPIO.cleanup()
 
         # test setup of a tuple of channels
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup( (LED_PIN, LOOP_OUT), GPIO.OUT)
+        GPIO.setup((LED_PIN, LOOP_OUT), GPIO.OUT)
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.OUT)
         self.assertEqual(GPIO.gpio_function(LOOP_OUT), GPIO.OUT)
         GPIO.cleanup()
 
         # test warning when using pull up/down on i2c channels
         GPIO.setmode(GPIO.BOARD)
-        if GPIO.RPI_INFO['P1_REVISION'] == 0: # compute module
-            pass    # test not vailid
+        if GPIO.RPI_INFO['P1_REVISION'] == 0:  # compute module
+            pass  # test not vailid
         else:  # revision 1, 2 or A+/B+
             with warnings.catch_warnings(record=True) as w:
                 GPIO.setup(3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -182,7 +194,7 @@ class TestAAASetup(unittest.TestCase):
         with self.assertRaises(ValueError):
             GPIO.setup('d', GPIO.OUT)
         with self.assertRaises(ValueError):
-            GPIO.setup(('d',LED_PIN), GPIO.OUT)
+            GPIO.setup(('d', LED_PIN), GPIO.OUT)
 
         # test setting pull_up_down on an output
         GPIO.setmode(GPIO.BOARD)
@@ -193,6 +205,7 @@ class TestAAASetup(unittest.TestCase):
         GPIO.setmode(GPIO.BOARD)
         with self.assertRaises(ValueError):
             GPIO.setup(LOOP_IN, GPIO.IN, initial=GPIO.LOW)
+
 
 class TestInputOutput(unittest.TestCase):
     def setUp(self):
@@ -225,45 +238,46 @@ class TestInputOutput(unittest.TestCase):
         GPIO.setup(LOOP_OUT, GPIO.OUT)
         GPIO.setup(LED_PIN, GPIO.OUT)
 
-        GPIO.output( [LOOP_OUT, LED_PIN], GPIO.HIGH)
+        GPIO.output([LOOP_OUT, LED_PIN], GPIO.HIGH)
         self.assertEqual(GPIO.input(LOOP_OUT), GPIO.HIGH)
         self.assertEqual(GPIO.input(LED_PIN), GPIO.HIGH)
 
-        GPIO.output( (LOOP_OUT, LED_PIN), GPIO.LOW)
+        GPIO.output((LOOP_OUT, LED_PIN), GPIO.LOW)
         self.assertEqual(GPIO.input(LOOP_OUT), GPIO.LOW)
         self.assertEqual(GPIO.input(LED_PIN), GPIO.LOW)
 
-        GPIO.output( [LOOP_OUT, LED_PIN], [GPIO.HIGH, GPIO.LOW] )
+        GPIO.output([LOOP_OUT, LED_PIN], [GPIO.HIGH, GPIO.LOW])
         self.assertEqual(GPIO.input(LOOP_OUT), GPIO.HIGH)
         self.assertEqual(GPIO.input(LED_PIN), GPIO.LOW)
 
-        GPIO.output( (LOOP_OUT, LED_PIN), (GPIO.LOW, GPIO.HIGH) )
+        GPIO.output((LOOP_OUT, LED_PIN), (GPIO.LOW, GPIO.HIGH))
         self.assertEqual(GPIO.input(LOOP_OUT), GPIO.LOW)
         self.assertEqual(GPIO.input(LED_PIN), GPIO.HIGH)
 
         with self.assertRaises(RuntimeError):
-            GPIO.output( [LOOP_OUT, LED_PIN], [0,0,0] )
+            GPIO.output([LOOP_OUT, LED_PIN], [0, 0, 0])
 
         with self.assertRaises(RuntimeError):
-            GPIO.output( [LOOP_OUT, LED_PIN], (0,) )
+            GPIO.output([LOOP_OUT, LED_PIN], (0,))
 
         with self.assertRaises(RuntimeError):
-            GPIO.output(LOOP_OUT, (0,0))
+            GPIO.output(LOOP_OUT, (0, 0))
 
         with self.assertRaises(ValueError):
-            GPIO.output( [LOOP_OUT, 'x'], (0,0) )
+            GPIO.output([LOOP_OUT, 'x'], (0, 0))
 
         with self.assertRaises(ValueError):
-            GPIO.output( [LOOP_OUT, LED_PIN], (0,'x') )
+            GPIO.output([LOOP_OUT, LED_PIN], (0, 'x'))
 
         with self.assertRaises(ValueError):
-            GPIO.output( [LOOP_OUT, GND_PIN], (0,0) )
+            GPIO.output([LOOP_OUT, GND_PIN], (0, 0))
 
         with self.assertRaises(RuntimeError):
-            GPIO.output( [LOOP_OUT, LOOP_IN], (0,0) )
+            GPIO.output([LOOP_OUT, LOOP_IN], (0, 0))
 
     def tearDown(self):
         GPIO.cleanup()
+
 
 class TestSoftPWMExists(unittest.TestCase):
     def runTest(self):
@@ -274,6 +288,7 @@ class TestSoftPWMExists(unittest.TestCase):
             pwm2 = GPIO.PWM(LED_PIN, 49)
         GPIO.cleanup()
 
+
 class TestSoftPWM(unittest.TestCase):
     @unittest.skipIf(non_interactive, 'Non interactive mode')
     def runTest(self):
@@ -283,51 +298,52 @@ class TestSoftPWM(unittest.TestCase):
         pwm.start(100)
         print("\nPWM tests")
         response = input('Is the LED on (y/n) ? ').upper()
-        self.assertEqual(response,'Y')
+        self.assertEqual(response, 'Y')
         pwm.start(0)
         response = input('Is the LED off (y/n) ? ').upper()
-        self.assertEqual(response,'Y')
+        self.assertEqual(response, 'Y')
         print("LED Brighten/fade test...")
-        for i in range(0,3):
-            for x in range(0,101,5):
+        for i in range(0, 3):
+            for x in range(0, 101, 5):
                 pwm.ChangeDutyCycle(x)
                 time.sleep(0.1)
-            for x in range(100,-1,-5):
+            for x in range(100, -1, -5):
                 pwm.ChangeDutyCycle(x)
                 time.sleep(0.1)
         pwm.stop()
         response = input('Did it work (y/n) ? ').upper()
-        self.assertEqual(response,'Y')
+        self.assertEqual(response, 'Y')
         GPIO.cleanup()
+
 
 class TestSetWarnings(unittest.TestCase):
     def test_alreadyinuse(self):
         """Test 'already in use' warning"""
         GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
-        with open('/sys/class/gpio/export','wb') as f:
+        with open('/sys/class/gpio/export', 'wb') as f:
             f.write(str(LED_PIN_BCM).encode())
         time.sleep(0.2)  # wait for udev to set permissions
-        with open('/sys/class/gpio/gpio%s/direction'%LED_PIN_BCM,'wb') as f:
+        with open('/sys/class/gpio/gpio%s/direction' % LED_PIN_BCM, 'wb') as f:
             f.write(b'out')
         with warnings.catch_warnings(record=True) as w:
-            GPIO.setup(LED_PIN, GPIO.OUT)    # generate 'already in use' warning
-            self.assertEqual(len(w),0)       # should be no warnings
-        with open('/sys/class/gpio/unexport','wb') as f:
+            GPIO.setup(LED_PIN, GPIO.OUT)  # generate 'already in use' warning
+            self.assertEqual(len(w), 0)  # should be no warnings
+        with open('/sys/class/gpio/unexport', 'wb') as f:
             f.write(str(LED_PIN_BCM).encode())
         GPIO.cleanup()
 
         GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(True)
-        with open('/sys/class/gpio/export','wb') as f:
+        with open('/sys/class/gpio/export', 'wb') as f:
             f.write(str(LED_PIN_BCM).encode())
         time.sleep(0.2)  # wait for udev to set permissions
-        with open('/sys/class/gpio/gpio%s/direction'%LED_PIN_BCM,'wb') as f:
+        with open('/sys/class/gpio/gpio%s/direction' % LED_PIN_BCM, 'wb') as f:
             f.write(b'out')
         with warnings.catch_warnings(record=True) as w:
-            GPIO.setup(LED_PIN, GPIO.OUT)    # generate 'already in use' warning
+            GPIO.setup(LED_PIN, GPIO.OUT)  # generate 'already in use' warning
             self.assertEqual(w[0].category, RuntimeWarning)
-        with open('/sys/class/gpio/unexport','wb') as f:
+        with open('/sys/class/gpio/unexport', 'wb') as f:
             f.write(str(LED_PIN_BCM).encode())
         GPIO.cleanup()
 
@@ -338,31 +354,35 @@ class TestSetWarnings(unittest.TestCase):
         GPIO.setup(SWITCH_PIN, GPIO.IN)
         with warnings.catch_warnings(record=True) as w:
             GPIO.cleanup()
-            self.assertEqual(len(w),0) # no warnings
+            self.assertEqual(len(w), 0)  # no warnings
             GPIO.cleanup()
-            self.assertEqual(len(w),0) # no warnings
+            self.assertEqual(len(w), 0)  # no warnings
 
         GPIO.setwarnings(True)
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(SWITCH_PIN, GPIO.IN)
         with warnings.catch_warnings(record=True) as w:
             GPIO.cleanup()
-            self.assertEqual(len(w),0) # no warnings
+            self.assertEqual(len(w), 0)  # no warnings
             GPIO.cleanup()
-            self.assertEqual(w[0].category, RuntimeWarning) # a warning
+            self.assertEqual(w[0].category, RuntimeWarning)  # a warning
+
 
 class TestVersions(unittest.TestCase):
     def test_rpi_info(self):
         print('RPi Board Information')
         print('---------------------')
-        for key,val in list(GPIO.RPI_INFO.items()):
-            print('%s => %s'%(key,val))
+        for key, val in list(GPIO.RPI_INFO.items()):
+            print('%s => %s' % (key, val))
         response = input('\nIs this board info correct (y/n) ? ').upper()
         self.assertEqual(response, 'Y')
 
     def test_gpio_version(self):
-        response = input('\nRPi.GPIO version %s - is this correct (y/n) ? '%GPIO.VERSION).upper()
+        response = input(
+            '\nRPi.GPIO version %s - is this correct (y/n) ? ' % GPIO.VERSION
+        ).upper()
         self.assertEqual(response, 'Y')
+
 
 class TestGPIOFunction(unittest.TestCase):
     def runTest(self):
@@ -382,14 +402,15 @@ class TestGPIOFunction(unittest.TestCase):
     def tearDown(self):
         GPIO.cleanup()
 
+
 class TestSwitchBounce(unittest.TestCase):
     def __init__(self, *a, **k):
         unittest.TestCase.__init__(self, *a, **k)
         self.switchcount = 0
 
-    def cb(self,chan):
+    def cb(self, chan):
         self.switchcount += 1
-        print('Button press',self.switchcount)
+        print('Button press', self.switchcount)
 
     def setUp(self):
         GPIO.setmode(GPIO.BOARD)
@@ -399,7 +420,9 @@ class TestSwitchBounce(unittest.TestCase):
     def test_switchbounce(self):
         self.switchcount = 0
         print("\nSwitch bounce test.  Press switch at least 10 times and count...")
-        GPIO.add_event_detect(SWITCH_PIN, GPIO.FALLING, callback=self.cb, bouncetime=200)
+        GPIO.add_event_detect(
+            SWITCH_PIN, GPIO.FALLING, callback=self.cb, bouncetime=200
+        )
         while self.switchcount < 10:
             time.sleep(1)
         GPIO.remove_event_detect(SWITCH_PIN)
@@ -407,16 +430,19 @@ class TestSwitchBounce(unittest.TestCase):
     @unittest.skipIf(non_interactive, 'Non interactive mode')
     def test_event_detected(self):
         self.switchcount = 0
-        print("\nGPIO.event_detected() switch bounce test.  Press switch at least 10 times and count...")
+        print(
+            "\nGPIO.event_detected() switch bounce test.  Press switch at least 10 times and count..."
+        )
         GPIO.add_event_detect(SWITCH_PIN, GPIO.FALLING, bouncetime=200)
         while self.switchcount < 10:
             if GPIO.event_detected(SWITCH_PIN):
                 self.switchcount += 1
-                print('Button press',self.switchcount)
+                print('Button press', self.switchcount)
         GPIO.remove_event_detect(SWITCH_PIN)
 
     def tearDown(self):
         GPIO.cleanup()
+
 
 class TestEdgeDetection(unittest.TestCase):
     def setUp(self):
@@ -429,11 +455,13 @@ class TestEdgeDetection(unittest.TestCase):
     #  to exit.  Test for that.
     def testShellCmdWithWaitForEdge(self):
         self.finished = False
+
         def shellcmd():
             for i in range(50):
                 os.system('sleep 0')
                 subprocess.call('sleep 0', shell=True)
             self.finished = True
+
         def makehigh():
             GPIO.output(LOOP_OUT, GPIO.HIGH)
 
@@ -485,7 +513,7 @@ class TestEdgeDetection(unittest.TestCase):
             starttime = time.time()
             channel = GPIO.wait_for_edge(LOOP_IN, GPIO.FALLING, timeout=200)
             endtime = time.time()
-            self.assertLess(endtime-starttime, 0.12)
+            self.assertLess(endtime - starttime, 0.12)
             self.assertEqual(channel, LOOP_IN)
             GPIO.output(LOOP_OUT, GPIO.HIGH)
             count += 1
@@ -495,6 +523,7 @@ class TestEdgeDetection(unittest.TestCase):
     def testWaitForEdgeWithCallback(self):
         def cb():
             raise Exception("Callback should not be called")
+
         def makehigh():
             GPIO.output(LOOP_OUT, GPIO.HIGH)
 
@@ -507,13 +536,14 @@ class TestEdgeDetection(unittest.TestCase):
 
         GPIO.output(LOOP_OUT, GPIO.LOW)
         GPIO.add_event_callback(LOOP_IN, callback=cb)
-        with self.assertRaises(RuntimeError):   # conflicting edge exception
+        with self.assertRaises(RuntimeError):  # conflicting edge exception
             GPIO.wait_for_edge(LOOP_IN, GPIO.RISING)
 
         GPIO.remove_event_detect(LOOP_IN)
 
     def testWaitForEventSwitchbounce(self):
         self.finished = False
+
         def bounce():
             GPIO.output(LOOP_OUT, GPIO.HIGH)
             time.sleep(0.01)
@@ -540,7 +570,7 @@ class TestEdgeDetection(unittest.TestCase):
         GPIO.wait_for_edge(LOOP_IN, GPIO.RISING, bouncetime=100)
         GPIO.wait_for_edge(LOOP_IN, GPIO.RISING, bouncetime=100)
         finishtime = time.time()
-        self.assertGreater(finishtime-starttime, 0.2)
+        self.assertGreater(finishtime - starttime, 0.2)
         while not self.finished:
             time.sleep(0.1)
 
@@ -609,6 +639,7 @@ class TestEdgeDetection(unittest.TestCase):
     def testWaitForRising(self):
         def makehigh():
             GPIO.output(LOOP_OUT, GPIO.HIGH)
+
         GPIO.output(LOOP_OUT, GPIO.LOW)
         t = Timer(0.1, makehigh)
         t.start()
@@ -617,6 +648,7 @@ class TestEdgeDetection(unittest.TestCase):
     def testWaitForFalling(self):
         def makelow():
             GPIO.output(LOOP_OUT, GPIO.LOW)
+
         GPIO.output(LOOP_OUT, GPIO.HIGH)
         t = Timer(0.1, makelow)
         t.start()
@@ -624,10 +656,12 @@ class TestEdgeDetection(unittest.TestCase):
 
     def testExceptionInCallback(self):
         self.run_cb = False
+
         def cb(channel):
             with self.assertRaises(ZeroDivisionError):
                 self.run_cb = True
-                a = 1/0
+                a = 1 / 0
+
         GPIO.output(LOOP_OUT, GPIO.LOW)
         GPIO.add_event_detect(LOOP_IN, GPIO.RISING, callback=cb)
         time.sleep(0.01)
@@ -687,8 +721,10 @@ class TestEdgeDetection(unittest.TestCase):
     def testAlternateWaitForEdge(self):
         def makehigh():
             GPIO.output(LOOP_OUT, GPIO.HIGH)
+
         def makelow():
             GPIO.output(LOOP_OUT, GPIO.LOW)
+
         GPIO.output(LOOP_OUT, GPIO.LOW)
         t = Timer(0.1, makehigh)
         t2 = Timer(0.15, makelow)
@@ -700,6 +736,7 @@ class TestEdgeDetection(unittest.TestCase):
     def testWaitForEdgeTimeout(self):
         def makehigh():
             GPIO.output(LOOP_OUT, GPIO.HIGH)
+
         def makelow():
             GPIO.output(LOOP_OUT, GPIO.LOW)
 
@@ -720,6 +757,7 @@ class TestEdgeDetection(unittest.TestCase):
 
     def tearDown(self):
         GPIO.cleanup()
+
 
 class TestCleanup(unittest.TestCase):
     def setUp(self):
@@ -747,16 +785,16 @@ class TestCleanup(unittest.TestCase):
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.OUT)
         self.assertEqual(GPIO.gpio_function(SWITCH_PIN), GPIO.IN)
         self.assertEqual(GPIO.gpio_function(LOOP_IN), GPIO.IN)
-        self.assertTrue(os.path.exists('/sys/class/gpio/gpio%s'%SWITCH_PIN_BCM))
-        self.assertTrue(os.path.exists('/sys/class/gpio/gpio%s'%LOOP_IN_BCM))
+        self.assertTrue(os.path.exists('/sys/class/gpio/gpio%s' % SWITCH_PIN_BCM))
+        self.assertTrue(os.path.exists('/sys/class/gpio/gpio%s' % LOOP_IN_BCM))
         GPIO.cleanup(SWITCH_PIN)
         time.sleep(0.2)  # wait for udev to set permissions
-        self.assertFalse(os.path.exists('/sys/class/gpio/gpio%s'%SWITCH_PIN_BCM))
-        self.assertTrue(os.path.exists('/sys/class/gpio/gpio%s'%LOOP_IN_BCM))
+        self.assertFalse(os.path.exists('/sys/class/gpio/gpio%s' % SWITCH_PIN_BCM))
+        self.assertTrue(os.path.exists('/sys/class/gpio/gpio%s' % LOOP_IN_BCM))
         GPIO.cleanup(LOOP_IN)
         time.sleep(0.2)  # wait for udev to set permissions
-        self.assertFalse(os.path.exists('/sys/class/gpio/gpio%s'%SWITCH_PIN_BCM))
-        self.assertFalse(os.path.exists('/sys/class/gpio/gpio%s'%LOOP_IN_BCM))
+        self.assertFalse(os.path.exists('/sys/class/gpio/gpio%s' % SWITCH_PIN_BCM))
+        self.assertFalse(os.path.exists('/sys/class/gpio/gpio%s' % LOOP_IN_BCM))
         GPIO.cleanup(LOOP_OUT)
         self.assertEqual(GPIO.gpio_function(LOOP_OUT), GPIO.IN)
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.OUT)
@@ -779,7 +817,7 @@ class TestCleanup(unittest.TestCase):
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.IN)
         GPIO.setup(LOOP_OUT, GPIO.OUT)
         GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.cleanup((LOOP_OUT,LED_PIN))
+        GPIO.cleanup((LOOP_OUT, LED_PIN))
         GPIO.setmode(GPIO.BOARD)
         self.assertEqual(GPIO.gpio_function(LOOP_OUT), GPIO.IN)
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.IN)
@@ -797,9 +835,10 @@ class TestCleanup(unittest.TestCase):
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.IN)
         GPIO.setup(LOOP_OUT, GPIO.OUT)
         GPIO.setup(LED_PIN, GPIO.OUT)
-        GPIO.cleanup([LOOP_OUT,LED_PIN])
+        GPIO.cleanup([LOOP_OUT, LED_PIN])
         self.assertEqual(GPIO.gpio_function(LOOP_OUT), GPIO.IN)
         self.assertEqual(GPIO.gpio_function(LED_PIN), GPIO.IN)
+
 
 if __name__ == '__main__':
     unittest.main()
