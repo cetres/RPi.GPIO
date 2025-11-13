@@ -4,6 +4,7 @@ LICENCE.txt
 MANIFEST.in
 README.txt
 create_gpio_user_permissions.py
+setup.cfg
 setup.py
 RPi/__init__.py
 RPi.GPIO.egg-info/PKG-INFO
